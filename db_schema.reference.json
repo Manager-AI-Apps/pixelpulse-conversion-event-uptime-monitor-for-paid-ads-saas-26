@@ -1,0 +1,417 @@
+{
+  "build_id": "26",
+  "plan_hash_note": "Read-only reference. Translate this into Drizzle code in lib/db/schema.ts.",
+  "tables": [
+    {
+      "name": "user",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary key"
+          ]
+        },
+        {
+          "name": "name",
+          "type": "text"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "unique"
+          ]
+        },
+        {
+          "name": "emailVerified",
+          "type": "boolean",
+          "constraints": [
+            "not null",
+            "default false"
+          ]
+        },
+        {
+          "name": "image",
+          "type": "text"
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary key"
+          ]
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "references user(id) on delete cascade"
+          ]
+        },
+        {
+          "name": "token",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "unique"
+          ]
+        },
+        {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "ipAddress",
+          "type": "text"
+        },
+        {
+          "name": "userAgent",
+          "type": "text"
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "account",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary key"
+          ]
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "references user(id) on delete cascade"
+          ]
+        },
+        {
+          "name": "accountId",
+          "type": "text",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "providerId",
+          "type": "text",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "accessToken",
+          "type": "text"
+        },
+        {
+          "name": "refreshToken",
+          "type": "text"
+        },
+        {
+          "name": "idToken",
+          "type": "text"
+        },
+        {
+          "name": "accessTokenExpiresAt",
+          "type": "timestamp"
+        },
+        {
+          "name": "refreshTokenExpiresAt",
+          "type": "timestamp"
+        },
+        {
+          "name": "scope",
+          "type": "text"
+        },
+        {
+          "name": "password",
+          "type": "text"
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "verification",
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "constraints": [
+            "primary key"
+          ]
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "monitor",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraints": [
+            "primary key",
+            "default gen_random_uuid()"
+          ]
+        },
+        {
+          "name": "userId",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "references user(id) on delete cascade"
+          ]
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "funnelConfig",
+          "type": "jsonb",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "slackWebhookUrl",
+          "type": "text"
+        },
+        {
+          "name": "isActive",
+          "type": "boolean",
+          "constraints": [
+            "not null",
+            "default true"
+          ]
+        },
+        {
+          "name": "createdAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null",
+            "default now()"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null",
+            "default now()"
+          ]
+        }
+      ],
+      "indexes": [
+        "idx_monitor_userId on (userId)"
+      ]
+    },
+    {
+      "name": "check_run",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraints": [
+            "primary key",
+            "default gen_random_uuid()"
+          ]
+        },
+        {
+          "name": "monitorId",
+          "type": "uuid",
+          "constraints": [
+            "not null",
+            "references monitor(id) on delete cascade"
+          ]
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "check (status in ('running','pending_retry','passed','failed'))"
+          ]
+        },
+        {
+          "name": "startedAt",
+          "type": "timestamp",
+          "constraints": [
+            "not null",
+            "default now()"
+          ]
+        },
+        {
+          "name": "completedAt",
+          "type": "timestamp"
+        },
+        {
+          "name": "diagnosisCodes",
+          "type": "jsonb"
+        },
+        {
+          "name": "isRetry",
+          "type": "boolean",
+          "constraints": [
+            "not null",
+            "default false"
+          ]
+        }
+      ],
+      "indexes": [
+        "idx_check_run_monitor_started on (monitorId, startedAt desc)"
+      ]
+    },
+    {
+      "name": "event_assertion_result",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraints": [
+            "primary key",
+            "default gen_random_uuid()"
+          ]
+        },
+        {
+          "name": "checkRunId",
+          "type": "uuid",
+          "constraints": [
+            "not null",
+            "references check_run(id) on delete cascade"
+          ]
+        },
+        {
+          "name": "stepIndex",
+          "type": "integer",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "eventType",
+          "type": "text",
+          "constraints": [
+            "not null",
+            "check (eventType in ('ga4','meta_pixel','stripe_purchase'))"
+          ]
+        },
+        {
+          "name": "passed",
+          "type": "boolean",
+          "constraints": [
+            "not null"
+          ]
+        },
+        {
+          "name": "diagnosisCode",
+          "type": "text"
+        },
+        {
+          "name": "diagnosisDetail",
+          "type": "text"
+        },
+        {
+          "name": "capturedPayload",
+          "type": "jsonb"
+        }
+      ],
+      "indexes": [
+        "idx_ear_checkRunId_eventType on (checkRunId, eventType)",
+        "idx_ear_checkRunId_passed on (checkRunId, passed)"
+      ]
+    }
+  ]
+}
