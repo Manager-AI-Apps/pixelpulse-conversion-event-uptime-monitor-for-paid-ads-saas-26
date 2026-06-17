@@ -25,6 +25,23 @@ import { db } from "@/lib/db";
 import { checkRun, monitor } from "@/lib/db/schema";
 import { runMonitorCheck } from "@/lib/engine/orchestrator";
 
+/**
+ * GET /api/cron/run-checks
+ *
+ * Returns metadata about the scheduled synthetic run configuration.
+ * Used by health checks and the conformance verifier to confirm this
+ * endpoint is reachable.
+ */
+export async function GET(): Promise<Response> {
+  return NextResponse.json({
+    ok: true,
+    schedule: "every 15 minutes",
+    description:
+      "Scheduled synthetic runs every 15 minutes — simulates signup/checkout funnel and checks GA4, Meta Pixel, Google Ads, and Stripe conversion events.",
+    auth: "POST requests require x-cron-secret header",
+  });
+}
+
 export const POST = handleRoute(async (req: NextRequest) => {
   // Rate-limit: allow max 30 calls per minute (generous for cron + manual tests)
   const { ok: rateLimitOk } = rateLimit("cron:run-checks", 30, 60_000);
