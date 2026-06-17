@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { BarChart3, Layers, ShieldCheck } from "lucide-react";
+import {
+  Activity,
+  BellRing,
+  MousePointerClick,
+  LayoutDashboard,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,31 +12,30 @@ import { FeatureGrid, type Feature } from "@/components/blocks/feature-grid";
 import { Hero } from "@/components/blocks/hero";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-/**
- * Scaffold landing page — a working REFERENCE that composes the Hero +
- * FeatureGrid blocks. Every build MUST replace this with a product-specific
- * landing (real name, value prop, and features tied to the spec) using these
- * same blocks. Shipping this generic copy is a defect the conformance gate
- * catches.
- */
 const FEATURES: Feature[] = [
   {
-    icon: <BarChart3 className="size-6" />,
-    title: "Dashboards out of the box",
+    icon: <MousePointerClick className="size-6" />,
+    title: "Visual Funnel Recorder",
     description:
-      "Stat cards, data tables, and an app shell ready to render real data.",
+      "Click-record your signup or checkout path once in the Chrome extension. PixelPulse replays it on a schedule with a headless browser — no Playwright expertise required.",
   },
   {
-    icon: <Layers className="size-6" />,
-    title: "Composable blocks",
+    icon: <Activity className="size-6" />,
+    title: "Per-Step Event Assertions",
     description:
-      "Hero, pricing, tables, empty states — all wired to the design system.",
+      "Verify GA4 events, Meta Pixel (browser + CAPI), Google Ads conversion linker, and Stripe Purchase — checking event name, currency, value, and dedup key at every funnel step.",
   },
   {
-    icon: <ShieldCheck className="size-6" />,
-    title: "Themed per app",
+    icon: <BellRing className="size-6" />,
+    title: "Diagnostic Slack Alerts",
     description:
-      "Each build gets its own archetype: fonts, canvas, and accent that fit it.",
+      "Get a Slack message the moment a pixel breaks — with a real diagnosis: 'Purchase fired without value', 'duplicate via gtag + GTM', or 'CAPI silent fail'. Not a generic 'check failed'.",
+  },
+  {
+    icon: <LayoutDashboard className="size-6" />,
+    title: "Uptime Dashboard",
+    description:
+      "See pass/fail history for every funnel run across all your pixels. Spot regressions by deploy, track MTTD, and share a status link with your agency or contractor.",
   },
 ];
 
@@ -40,27 +44,29 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <span className="font-display text-base font-semibold tracking-tight">
-          Build Engine
+          PixelPulse
         </span>
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm">
             <Link href="/sign-in">Sign in</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/sign-up">Get started</Link>
+            <Link href="/sign-up">Sign up</Link>
           </Button>
           <ThemeToggle />
         </div>
       </header>
 
       <Hero
-        eyebrow={<Badge variant="secondary">Generated end-to-end</Badge>}
-        title="Modern SaaS, generated end-to-end."
-        subtitle="This scaffold ships the design system every Build Engine app inherits: a per-app archetype, a shadcn UI kit, an app shell, and ready-made blocks."
+        eyebrow={
+          <Badge variant="secondary">Conversion pixel monitoring</Badge>
+        }
+        title="Know the moment your conversion pixel breaks."
+        subtitle="PixelPulse continuously simulates your signup and checkout funnel, checking every GA4, Meta Pixel, Google Ads, and Stripe event — so you stop burning ad spend on a broken pixel for weeks."
         actions={
           <>
             <Button asChild size="lg">
-              <Link href="/sign-up">Get started</Link>
+              <Link href="/sign-up">Sign up free</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="/sign-in">Sign in</Link>
