@@ -60,3 +60,31 @@ export const FunnelConfigSchema = z.object({
 });
 
 export type FunnelConfig = z.infer<typeof FunnelConfigSchema>;
+
+// ---------------------------------------------------------------------------
+// Replay result types
+// ---------------------------------------------------------------------------
+
+/** A single tracking event detected during a funnel step replay */
+export interface CapturedEvent {
+  /** The event platform/type detected */
+  type: EventType;
+  /** The event name detected (e.g. "Purchase", "purchase") */
+  eventName: string;
+  /** The raw matched source string that triggered detection */
+  raw?: string;
+}
+
+/** The result of replaying a single funnel step */
+export interface StepResult {
+  /** The URL that was fetched */
+  url: string;
+  /** HTTP response status code (0 if a network error occurred) */
+  statusCode: number;
+  /** Flat map of response headers */
+  headers: Record<string, string>;
+  /** All tracking events detected in the page HTML */
+  capturedEvents: CapturedEvent[];
+  /** Error message if the fetch failed */
+  error?: string;
+}
