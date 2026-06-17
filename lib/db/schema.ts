@@ -14,10 +14,15 @@
 
 import {
   boolean,
+  index,
+  integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ---------------------------------------------------------------------------
 // Better Auth tables — required shape. Do not modify column names/types.
@@ -76,3 +81,73 @@ export const verification = pgTable("verification", {
 // ---------------------------------------------------------------------------
 // App tables — add below this line during schema translation.
 // ---------------------------------------------------------------------------
+
+// monitor: a funnel that the user wants to keep an eye on
+export const monitor = pgTable(
+  "monitor",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    /** Serialised FunnelConfig (validated at the application layer) */
+    funnelConfig: jsonb("funnel_config").notNull(),
+    slackWebhookUrl: text("slack_webhook_url"),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: false }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: false }).notNull().defaultNow(),
+  },
+  (t) => [index("idx_monitor_userId").on(t.userId)],
+);
+
+// check_run: a single execution of a monitor's funnel
+export const checkRun = pgTable(
+  "check_run",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    monitorId: uuid("monitor_id")
+      .notNull()
+      .references(() => monitor.id, { onDelete: "cascade" }),
+    /** running | pending_retry | passed | failed */
+    status: text("status")
+      .notNull()
+      .$type<"running" | "pending_retry" | "passed" | "failed">(),
+    startedAt: timestamp("started_at", { withTimezone: false }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: false }),
+    /** Array of diagnosis code strings */
+    diagnosisCodes: jsonb("diagnosis_codes"),
+    isRetry: boolean("is_retry").notNull().default(false),
+  },
+  (t) => [
+    index("idx_check_run_monitor_started").on(t.monitorId, sql`${t.startedAt} desc`),
+    // CHECK constraint: status must be one of the allowed values
+    { check: sql`${t.status} in ('running','pending_retry','passed','failed')` },
+  ],
+);
+
+// event_assertion_result: per-event assertion outcome within a check_run
+export const eventAssertionResult = pgTable(
+  "event_assertion_result",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    checkRunId: uuid("check_run_id")
+      .notNull()
+      .references(() => checkRun.id, { onDelete: "cascade" }),
+    stepIndex: integer("step_index").notNull(),
+    /** ga4 | meta_pixel | stripe_purchase */
+    eventType: text("event_type")
+      .notNull()
+      .$type<"ga4" | "meta_pixel" | "stripe_purchase">(),
+    passed: boolean("passed").notNull(),
+    diagnosisCode: text("diagnosis_code"),
+    diagnosisDetail: text("diagnosis_detail"),
+    capturedPayload: jsonb("captured_payload"),
+  },
+  (t) => [
+    index("idx_ear_checkRunId_eventType").on(t.checkRunId, t.eventType),
+    index("idx_ear_checkRunId_passed").on(t.checkRunId, t.passed),
+    // CHECK constraint: eventType must be one of the allowed values
+    { check: sql`${t.eventType} in ('ga4','meta_pixel','stripe_purchase')` },
+  ],
+);
